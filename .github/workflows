@@ -1,0 +1,36 @@
+name: Deploy on EC2 self-hosted runner
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Pull latest changes (optional if actions/checkout is used)
+        run: git pull
+
+      - name: Build Docker image
+        run: docker build -t gladiators-api .
+
+      - name: Stop old container if exists
+        run: |
+          docker stop gladiators-api || true
+          docker rm gladiators-api || true
+
+      - name: Run new container
+        run: docker run -d -p 3000:3000 --name gladiators-api gladiators-api
+      - name: Clean up unused Docker images
+        run: docker image prune -f
+      - name: Clean up unused Docker containers
+        run: docker container prune -f
+      - name: Clean up unused Docker volumes
+        run: docker volume prune -f
+      - name: Clean up unused Docker networks
+        run: docker network prune -f
+      - name: Notify deployment success
+        run: echo "Deployment successful on EC2 self-hosted runner"
