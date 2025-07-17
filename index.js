@@ -9,7 +9,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
     message:
-      "Hello World! This is a simple Node.js Express app running in Docker.",
+      "Madhura Hello World! This is a simple Node.js Express app running in Docker.",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
   });
