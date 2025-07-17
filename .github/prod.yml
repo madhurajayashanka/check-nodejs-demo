@@ -2,7 +2,7 @@ name: Deploy on EC2 self-hosted runner
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
@@ -24,13 +24,18 @@ jobs:
 
       - name: Run new container
         run: docker run -d -p 3000:3000 --name gladiators-api gladiators-api
+
       - name: Clean up unused Docker images
         run: docker image prune -f
+
       - name: Clean up unused Docker containers
         run: docker container prune -f
+
       - name: Clean up unused Docker volumes
         run: docker volume prune -f
+
       - name: Clean up unused Docker networks
         run: docker network prune -f
+
       - name: Notify deployment success
         run: echo "Deployment successful on EC2 self-hosted runner"
