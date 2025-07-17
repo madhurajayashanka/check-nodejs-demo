@@ -23,7 +23,22 @@ jobs:
           docker rm gladiators-api || true
 
       - name: Run new container
-        run: docker run -d -p 3000:3000 --name gladiators-api gladiators-api
+        run: docker run -d -p 3000:3000 --name gladiators-api --restart unless-stopped gladiators-api
+
+      - name: Verify deployment
+        run: |
+          sleep 10
+          curl -f http://localhost:3000/health || exit 1
+          echo "✅ Local health check passed"
+
+      - name: Get public access information
+        run: |
+          PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+          echo "🌐 Application deployed successfully!"
+          echo "📍 Public access: http://$PUBLIC_IP:3000"
+          echo "🔍 Health check: http://$PUBLIC_IP:3000/health"
+          echo "📊 Container status:"
+          docker ps | grep gladiators-api
 
       - name: Clean up unused Docker images
         run: docker image prune -f
@@ -38,4 +53,4 @@ jobs:
         run: docker network prune -f
 
       - name: Notify deployment success
-        run: echo "Deployment successful on EC2 self-hosted runner"
+        run: echo "🚀 Deployment successful on EC2 self-hosted runner"
